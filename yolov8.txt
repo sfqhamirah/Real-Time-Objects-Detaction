@@ -1,0 +1,74 @@
+YOLO V8 REAL TIME OBJECT DETECTION
+
+1. Imports
+
+from ultralytics import YOLO
+import cv2
+
+- ultralytics.YOLO - official YOLOv8 API (hides all the low level stuff like anchors, NMS, blobs etc)
+- cv2 - used only for webcam access and displaying the video
+
+2. Load YOLOv8 Model
+
+model = YOLO("yolov8n.pt")
+
+- yolov8n.pt = YOLOv8 Nano
+- n = nano (smallest, fastest, CPU-friendly)
+- The model is pre-trained on COCO dataset (80 classes)
+- no .cfg, .weights
+
+3. Open Webcam
+
+cap = cv2.VideoCapture(3)
+
+- opens camera device 3
+
+4. Main Loop
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+- Reads onen fram at a time from webcam
+- ret == false means the camera failed or disconnect
+
+5. Run Detection
+
+results = model(frame)
+
+- resize frame, normalizes pixels, runs neural network, applies confidence filtering and non-max suppression, retunr detection results
+
+6. Draw Result
+
+annotated_frame = results[0].plot()
+
+- results[0] - detections for the current frame
+- .plot() - draws:
+	- bounding boxes
+	- class labels
+	- confidence scores
+- not manually draw rectangles	
+
+7. Display output
+
+cv2.imshow("YOLOv8 Webcam", annotated_frame)
+
+- shows the live detection window
+
+8. Exit with ESC
+
+if cv2.waitKey(1) == 27:
+    break
+	
+- 27 = ESC key
+- Clean and reliable exit
+
+9. Cleanup
+
+cap.release()
+cv2.destroyAllWindows()
+
+- release webcam
+- closes all OpenCV windows
+- prevents camera lock issues
